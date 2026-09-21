@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Log in · Cafe Manager{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/login.css' %}">{% endblock %}
+{% block content %}
+<div class="login-page">
+  <div class="login-card">
+
+    <div class="login-brand">
+      <div class="coffee-circle circle-one"></div>
+      <div class="coffee-circle circle-two"></div>
+      <div class="coffee-circle circle-three"></div>
+
+      <div class="brand-content">
+        <div class="brand-logo">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 40h50v22c0 13-11 24-25 24s-25-11-25-24V40z" fill="#fff"/>
+            <path d="M72 44h6a10 10 0 0 1 0 20h-6" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+            <path d="M30 34c-2-5 2-6 0-11M40 34c-2-5 2-6 0-11M50 34c-2-5 2-6 0-11" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="brand-name">
+          <span class="brand-number">Cafe</span>
+          <span class="brand-cafe">11:11</span>
+        </div>
+
+        <div class="brand-divider"></div>
+
+        <h2>Run your counter, <span>not the other way around.</span></h2>
+
+        <p class="brand-description">
+          Menu, billing, inventory and sales — all in one offline system,
+          right at your counter.
+        </p>
+
+        <div class="brand-features">
+          <div class="brand-feature">
+            <div class="feature-icon">1</div>
+            <div>
+              <strong>Point of sale</strong>
+              <span>Ring up orders and print receipts in seconds</span>
+            </div>
+          </div>
+          <div class="brand-feature">
+            <div class="feature-icon">2</div>
+            <div>
+              <strong>Live inventory</strong>
+              <span>Stock deducts automatically as you sell</span>
+            </div>
+          </div>
+          <div class="brand-feature">
+            <div class="feature-icon">3</div>
+            <div>
+              <strong>Sales dashboard</strong>
+              <span>Daily and monthly totals at a glance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="brand-bottom">WORKS FULLY OFFLINE</div>
+    </div>
+
+    <div class="login-form-side">
+      <div class="login-form-inner">
+
+        <div class="mobile-logo">
+          <div class="mobile-logo-icon">☕</div>
+          Cafe Manager
+        </div>
+
+        <div class="login-heading">
+          <span class="welcome-label">WELCOME BACK</span>
+          <h1>Log in</h1>
+          <p>Enter your details to open the till.</p>
+        </div>
+
+        {% if form.errors %}
+        <div class="login-error">
+          <div class="error-icon">!</div>
+          <div>
+            <strong>Login failed</strong>
+            <span>Incorrect username or password. Please try again.</span>
+          </div>
+        </div>
+        {% endif %}
+
+        <form method="post" class="login-form">
+          {% csrf_token %}
+
+          <div class="login-field">
+            <label for="id_username">Username</label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z"/><path d="M4 21c1.4-4 4.6-6 8-6s6.6 2 8 6"/></svg>
+              </span>
+              <input type="text" name="username" id="id_username" placeholder="e.g. admin" required autofocus>
+            </div>
+          </div>
+
+          <div class="login-field">
+            <div class="password-label-row">
+              <label for="id_password">Password</label>
+            </div>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+              </span>
+              <input type="password" name="password" id="id_password" placeholder="Enter your password" required>
+            </div>
+          </div>
+
+          <button class="login-button" type="submit">
+            Log in
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <input type="hidden" name="next" value="{{ next }}">
+        </form>
+
+        <div class="login-footer">
+          <span class="footer-dot"></span>
+          Running offline on this device
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

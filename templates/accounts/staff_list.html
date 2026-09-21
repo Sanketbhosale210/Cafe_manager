@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Staff · Cafe 11:11{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Staff accounts</h1>
+  <a class="btn" href="{% url 'accounts:staff_add' %}">+ Add staff</a>
+</div>
+<div class="card">
+  <table>
+    <thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Active</th><th></th></tr></thead>
+    <tbody>
+      {% for s in staff %}
+      <tr>
+        <td>{{ s.username }}</td>
+        <td>{{ s.get_full_name }}</td>
+        <td><span class="badge {% if s.is_admin_role %}badge-green{% else %}badge-gray{% endif %}">{{ s.get_role_display }}</span></td>
+        <td>{% if s.is_active %}Yes{% else %}No{% endif %}</td>
+        <td>
+          <a class="btn btn-sm btn-secondary" href="{% url 'accounts:staff_edit' s.pk %}">Edit</a>
+          <a class="btn btn-sm btn-danger" href="{% url 'accounts:staff_delete' s.pk %}">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">No staff yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

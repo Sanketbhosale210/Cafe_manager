@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Receipt #{{ order.pk }}{% endblock %}
+{% block content %}
+<div class="no-print" style="margin-bottom:1rem;">
+  <button class="btn" onclick="window.print()">Print receipt</button>
+  <a class="btn btn-secondary" href="{% url 'orders:pos' %}">New sale</a>
+  <a class="btn btn-secondary" href="{% url 'orders:order_history' %}">Order history</a>
+</div>
+<div class="card receipt">
+  <div style="text-align:center;">
+    <h2 style="margin:0;">☕ Cafe 11:11</h2>
+    <div>Order #{{ order.pk }}</div>
+    <div>{{ order.created_at|date:"d M Y, H:i" }}</div>
+    {% if order.table_number %}<div>Table: {{ order.table_number }}</div>{% endif %}
+    {% if order.customer_name %}<div>Customer: {{ order.customer_name }}</div>{% endif %}
+  </div>
+  <hr>
+  {% for line in order.items.all %}
+  <div class="row">
+    <span>{{ line.quantity }} x {{ line.menu_item.name }}</span>
+    <span>₹{{ line.line_total }}</span>
+  </div>
+  {% endfor %}
+  <hr>
+  <div class="row" style="font-weight:700;font-size:1.1rem;">
+    <span>Total</span>
+    <span>₹{{ order.total }}</span>
+  </div>
+  <div class="row"><span>Payment</span><span>{{ order.get_payment_method_display }}</span></div>
+  <hr>
+  <div style="text-align:center;">Thank you, visit again!</div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Orders · Cafe 11:11{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Order history</h1>
+  <a class="btn" href="{% url 'orders:pos' %}">+ New sale</a>
+</div>
+<div class="category-tabs">
+  <a href="{% url 'orders:order_history' %}" class="{% if not status %}active{% endif %}">All</a>
+  <a href="?status=PAID" class="{% if status == 'PAID' %}active{% endif %}">Paid</a>
+  <a href="?status=OPEN" class="{% if status == 'OPEN' %}active{% endif %}">Open</a>
+  <a href="?status=CANCELLED" class="{% if status == 'CANCELLED' %}active{% endif %}">Cancelled</a>
+</div>
+<div class="card">
+  <table>
+    <thead><tr><th>#</th><th>Date</th><th>Table</th><th>Total</th><th>Payment</th><th>Status</th><th>Served by</th><th></th></tr></thead>
+    <tbody>
+      {% for order in orders %}
+      <tr>
+        <td>{{ order.pk }}</td>
+        <td>{{ order.created_at|date:"d M, H:i" }}</td>
+        <td>{{ order.table_number|default:"—" }}</td>
+        <td>₹{{ order.total }}</td>
+        <td>{{ order.get_payment_method_display }}</td>
+        <td>
+          {% if order.status == 'PAID' %}<span class="badge badge-green">Paid</span>
+          {% elif order.status == 'OPEN' %}<span class="badge badge-gray">Open</span>
+          {% else %}<span class="badge badge-red">Cancelled</span>{% endif %}
+        </td>
+        <td>{{ order.created_by.username|default:"—" }}</td>
+        <td><a class="btn btn-sm btn-secondary" href="{% url 'orders:receipt' order.pk %}">Receipt</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8">No orders yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

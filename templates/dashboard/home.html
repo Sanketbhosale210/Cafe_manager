@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-page">
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Overview of your sales, orders and inventory.</p>
+    </div>
+
+    {% comment %} <a href="{% url 'billing:create_bill' %}" class="new-bill-btn">
+      <span>＋</span>
+      New Bill
+    </a> {% endcomment %}
+  </div>
+
+
+  <!-- Main Dashboard -->
+  <div class="dashboard-layout">
+
+    <!-- LEFT : SALES -->
+    <section class="sales-section dashboard-card">
+
+      <div class="section-header">
+        <div>
+          <h2>Sales performance</h2>
+          <p>Track your sales over time</p>
+        </div>
+
+        <div class="period-select">
+  7 Days
+</div>
+      </div>
+
+      <div class="sales-total">
+        <span>Total sales</span>
+        <strong>₹{{ period_total|default:month_total|floatformat:0 }}</strong>
+      </div>
+
+      <div class="chart-wrapper">
+        <canvas id="salesChart"></canvas>
+      </div>
+
+    </section>
+
+
+    <!-- RIGHT : DASHBOARD INFO -->
+    <section class="right-section">
+
+      <!-- Statistics -->
+      <div class="stats-grid">
+
+        <div class="stat-card">
+          <div class="stat-icon">₹</div>
+
+          <div>
+            <span class="stat-label">Today's sales</span>
+            <strong>₹{{ today_total|floatformat:0 }}</strong>
+          </div>
+        </div>
+
+
+        <div class="stat-card">
+          <div class="stat-icon">↗</div>
+
+          <div>
+            <span class="stat-label">Orders today</span>
+            <strong>{{ today_order_count }}</strong>
+          </div>
+        </div>
+
+
+        <div class="stat-card">
+          <div class="stat-icon">◷</div>
+
+          <div>
+            <span class="stat-label">This month's sales</span>
+            <strong>₹{{ month_total|floatformat:0 }}</strong>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- Top Sellers -->
+      <div class="dashboard-card compact-card">
+
+        <div class="section-header">
+          <div>
+            <h2>Top sellers</h2>
+            <p>This month's best performing items</p>
+          </div>
+
+          <span class="small-badge">
+            {{ top_items|length }}
+          </span>
+        </div>
+
+        <div class="top-sellers-scroll">
+
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Revenue</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              {% for row in top_items %}
+
+              <tr>
+                <td>
+                  <div class="item-name">
+                    <span class="rank">
+                      {{ forloop.counter }}
+                    </span>
+
+                    {{ row.menu_item__name }}
+                  </div>
+                </td>
+
+                <td>
+                  <span class="qty">
+                    {{ row.qty_sold }}
+                  </span>
+                </td>
+
+                <td class="revenue">
+                  ₹{{ row.revenue }}
+                </td>
+              </tr>
+
+              {% empty %}
+
+              <tr>
+                <td colspan="3" class="empty">
+                  No sales yet this month.
+                </td>
+              </tr>
+
+              {% endfor %}
+
+            </tbody>
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <!-- Low Stock -->
+      <div class="dashboard-card compact-card">
+
+        <div class="section-header">
+
+          <div>
+            <h2>Low stock</h2>
+            <p>Items that need attention</p>
+          </div>
+
+          {% if low_stock %}
+            <span class="alert-badge">
+              {{ low_stock|length }}
+            </span>
+          {% endif %}
+
+        </div>
+
+
+        {% if low_stock %}
+
+        <div class="low-stock-scroll">
+
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Available</th>
+                <th>Reorder</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              {% for s in low_stock %}
+
+              <tr>
+                <td>
+                  <strong>{{ s.name }}</strong>
+                </td>
+
+                <td>
+                  <span class="stock-warning">
+                    {{ s.quantity }} {{ s.unit }}
+                  </span>
+                </td>
+
+                <td>
+                  {{ s.reorder_level }} {{ s.unit }}
+                </td>
+              </tr>
+
+              {% endfor %}
+
+            </tbody>
+          </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="stock-healthy">
+          <span>✓</span>
+          <div>
+            <strong>All stock levels look healthy</strong>
+            <p>No items need reordering.</p>
+          </div>
+        </div>
+
+        {% endif %}
+
+        <div class="inventory-link">
+          <a
+            href="{% url 'inventory:stock_list' %}"
+            class="inventory-btn"
+          >
+            View inventory →
+          </a>
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+</div>
+
+
+<script src="{% static 'js/chart.js' %}"></script>
+
+<script>
+  renderBarChart(
+    'salesChart',
+    {{ chart_labels|safe }},
+    {{ chart_values|safe }}
+  );
+</script>
+
+{% endblock %}

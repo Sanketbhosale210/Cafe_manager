@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Menu · Cafe 11:11{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Menu</h1>
+  {% if user.is_admin_role %}
+  <div>
+    <a class="btn btn-secondary" href="{% url 'menu:category_list' %}">Manage categories</a>
+    <a class="btn" href="{% url 'menu:menu_add' %}">+ Add item</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="category-tabs">
+  <a href="{% url 'menu:menu_list' %}" class="{% if not selected_category %}active{% endif %}">All</a>
+  {% for c in categories %}
+  <a href="?category={{ c.id }}" class="{% if selected_category == c.id %}active{% endif %}">{{ c.name }}</a>
+  {% endfor %}
+</div>
+
+<div class="grid grid-3">
+  {% for item in items %}
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;">
+      <strong>{{ item.name }}</strong>
+      {% if not item.is_available %}<span class="badge badge-gray">Hidden</span>{% endif %}
+    </div>
+    <div style="color:#6b6b6b;font-size:0.85rem;">{{ item.category.name|default:"Uncategorised" }}</div>
+    {% if item.description %}<p style="font-size:0.9rem;">{{ item.description }}</p>{% endif %}
+    <div class="price" style="font-weight:700;color:#c97b3f;">₹{{ item.price }}</div>
+    {% if user.is_admin_role %}
+    <div style="margin-top:0.6rem;">
+      <a class="btn btn-sm btn-secondary" href="{% url 'menu:menu_edit' item.pk %}">Edit</a>
+      <a class="btn btn-sm btn-danger" href="{% url 'menu:menu_delete' item.pk %}">Delete</a>
+    </div>
+    {% endif %}
+  </div>
+  {% empty %}
+  <p>No menu items yet{% if user.is_admin_role %} — <a href="{% url 'menu:menu_add' %}">add your first one</a>.{% else %}.{% endif %}</p>
+  {% endfor %}
+</div>
+{% endblock %}

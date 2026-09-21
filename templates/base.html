@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Cafe Manager{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  {% if user.is_authenticated %}
+  <div class="navbar no-print">
+    <a class="brand" href="{% url 'dashboard:home' %}">☕ Cafe Manager</a>
+    <nav>
+      <a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+      <a href="{% url 'orders:pos' %}" class="{% if request.resolver_match.url_name == 'pos' %}active{% endif %}">POS</a>
+      <a href="{% url 'orders:order_history' %}" class="{% if request.resolver_match.url_name == 'order_history' %}active{% endif %}">Orders</a>
+      <a href="{% url 'menu:menu_list' %}" class="{% if request.resolver_match.app_name == 'menu' %}active{% endif %}">Menu</a>
+      <a href="{% url 'inventory:stock_list' %}" class="{% if request.resolver_match.app_name == 'inventory' %}active{% endif %}">Inventory</a>
+      {% if user.is_admin_role %}
+      <a href="{% url 'accounts:staff_list' %}" class="{% if request.resolver_match.url_name == 'staff_list' %}active{% endif %}">Staff</a>
+      <a href="/admin/">Django Admin</a>
+      {% endif %}
+    </nav>
+    <div class="userbox">
+      <span>{{ user.get_full_name|default:user.username }} · {{ user.get_role_display }}</span>
+      <form action="{% url 'accounts:logout' %}" method="post" class="inline">
+        {% csrf_token %}
+        <button class="btn btn-sm btn-secondary" type="submit">Log out</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if user.is_authenticated %}<div class="container">{% endif %}
+    {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+  {% if user.is_authenticated %}</div>{% endif %}
+</body>
+</html>
